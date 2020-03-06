@@ -13,6 +13,12 @@ class NoteViewModel (application: Application) : ViewModel() {
      fun insert(note: Note) {
         repository.insert(note)
     }
+    fun delete(note: Note){
+        repository.delete(note)
+    }
+    fun deleteById(position:Int){
+        repository.deleteById(position)
+    }
 
      fun deleteAllNotes() {
         repository.deleteAllNotes()

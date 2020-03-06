@@ -31,6 +31,10 @@ class Repository(application: Application) {
     fun getAllNotes(): LiveData<List<Note>> {
         return allnotes
     }
+    fun delete(note: Note){
+        deleteNoteCoroutine(note)
+    }
+
 
     private fun InsertNoteCoroutine( note: Note) {
         GlobalScope.launch {
@@ -46,5 +50,18 @@ class Repository(application: Application) {
         }
 
 
+    }
+    private fun deleteNoteCoroutine(note: Note){
+        GlobalScope.launch {
+            noteDao.delete(note)
+        }
+    }
+    fun deleteById(position:Int){
+        deleteIdCoroutine(position)
+    }
+    private fun deleteIdCoroutine(position: Int){
+        GlobalScope.launch {
+            noteDao.deleteById(position)
+        }
     }
 }
