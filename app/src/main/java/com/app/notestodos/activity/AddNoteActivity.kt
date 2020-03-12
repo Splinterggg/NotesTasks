@@ -53,3 +53,4 @@ class AddNoteActivity : AppCompatActivity() {
         finish()
     }
 }
+
