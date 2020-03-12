@@ -1,24 +1,15 @@
-package com.app.notestodos
+package com.app.notestodos.repository
 
-import android.app.Application
 import androidx.lifecycle.LiveData
 import com.app.notestodos.dao.NoteDao
 import com.app.notestodos.entity.Note
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
+import javax.inject.Inject
+import javax.inject.Singleton
 
-
-class Repository(application: Application) {
-    private var noteDao: NoteDao
-    private var allnotes: LiveData<List<Note>>
-
-    init {
-        val database: NoteDatabase = NoteDatabase.getInstance(
-            application.applicationContext
-        )
-        noteDao = database.noteDao()
-        allnotes = noteDao.getAllNotes()
-    }
+@Singleton
+class Repository @Inject constructor(val noteDao: NoteDao) {
 
     fun insert(note: Note) {
         InsertNoteCoroutine( note)
@@ -29,7 +20,7 @@ class Repository(application: Application) {
     }
 
     fun getAllNotes(): LiveData<List<Note>> {
-        return allnotes
+        return noteDao.getAllNotes()
     }
     fun delete(note: Note){
         deleteNoteCoroutine(note)

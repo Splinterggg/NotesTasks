@@ -1,7 +1,6 @@
-package com.app.notestodos
+package com.app.notestodos.activity
 
 import android.app.Activity
-import android.app.Application
 import android.content.Intent
 import android.os.Bundle
 import android.view.Menu
@@ -9,34 +8,38 @@ import android.view.MenuItem
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
+import com.app.notestodos.NoteAdapter
+import com.app.notestodos.NoteViewModel
+import com.app.notestodos.R
 import com.app.notestodos.entity.Note
+import dagger.android.AndroidInjection
 import kotlinx.android.synthetic.main.activity_main.*
+import javax.inject.Inject
 
 class MainActivity : AppCompatActivity() {
+
+    @Inject
+    internal lateinit var viewModelFactory:ViewModelProvider.Factory
+
     private val ADD_NOTE_REQUEST = 1
     private lateinit var noteviewModel: NoteViewModel
     private val adapter = NoteAdapter()
     lateinit var allNotes: List<Note>
     override fun onCreate(savedInstanceState: Bundle?) {
+
+
+        AndroidInjection.inject(this)
         super.onCreate(savedInstanceState)
+
+        initialiseViewModel()
         setContentView(R.layout.activity_main)
         setupButtonAddNote()
         setupRecyclerView()
-        allNotes = mutableListOf()
-        val viewModelFactory=MyViewModelFactory(application)
-        noteviewModel = ViewModelProvider(this,viewModelFactory).get(NoteViewModel::class.java)
-        noteviewModel.getAllNotes().observe(this,
-            Observer<List<Note>> { list ->
-                list?.let {
-                    allNotes=it
-                    adapter.setNotes(it)
-                }
-            })
+
         ItemTouchHelper(object : ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT.or(
             ItemTouchHelper.RIGHT)) {
             override fun onMove(
@@ -80,6 +83,17 @@ class MainActivity : AppCompatActivity() {
             )
         }
     }
+   private fun  initialiseViewModel(){
+       noteviewModel = ViewModelProvider(this,viewModelFactory).get(NoteViewModel::class.java)
+       noteviewModel.getNotes().observe(this,
+           Observer<List<Note>> { list ->
+               list?.let {
+                   allNotes=it
+                   adapter.setNotes(it)
+               }
+           })
+   }
+
 
     private fun setupRecyclerView() {
         recycler_view.layoutManager = StaggeredGridLayoutManager(2,StaggeredGridLayoutManager.VERTICAL)
@@ -102,12 +116,5 @@ class MainActivity : AppCompatActivity() {
             }
 
         }
-
-}
-class MyViewModelFactory(val arg: Application):ViewModelProvider.Factory{
-    override fun <T : ViewModel?> create(modelClass: Class<T>): T {
-        return modelClass.getConstructor(Application::class.java)
-            .newInstance(arg)
-    }
 
 }

@@ -1,30 +1,30 @@
 package com.app.notestodos
 
-import android.app.Application
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import com.app.notestodos.entity.Note
+import com.app.notestodos.repository.Repository
+import javax.inject.Inject
 
 
-class NoteViewModel (application: Application) : ViewModel() {
-    private var repository: Repository = Repository(application)
-    private var allNotes: LiveData<List<Note>> = repository.getAllNotes()
-
-     fun insert(note: Note) {
+class NoteViewModel @Inject constructor(val repository: Repository) : ViewModel() {
+    fun insert(note: Note) {
         repository.insert(note)
     }
-    fun delete(note: Note){
+
+    fun delete(note: Note) {
         repository.delete(note)
     }
-    fun deleteById(position:Int){
+
+    fun deleteById(position: Int) {
         repository.deleteById(position)
     }
 
-     fun deleteAllNotes() {
+    fun deleteAllNotes() {
         repository.deleteAllNotes()
     }
 
-    fun getAllNotes(): LiveData<List<Note>> {
-        return allNotes
+    fun getNotes(): LiveData<List<Note>> {
+        return repository.getAllNotes()
     }
 }
